@@ -9,9 +9,9 @@
         <span>Status</span>
         <div 
           class="status-button flex" 
-          :class="{ paid: currentInvoice.invoucePaid, draft: currentInvoice.invoiceDraft, pending: currentInvoice.invoicePending }"
+          :class="{ paid: currentInvoice.invoicePaid, draft: currentInvoice.invoiceDraft, pending: currentInvoice.invoicePending }"
         >
-          <span v-if="currentInvoice.invoucePaid">Paid</span>
+          <span v-if="currentInvoice.invoicePaid">Paid</span>
           <span v-if="currentInvoice.invoiceDraft">Draft</span>
           <span v-if="currentInvoice.invoicePending">Peding</span>
         </div>
@@ -27,8 +27,8 @@
           Mark as Paid
         </button>
         <button
-          v-if="currentInvoice.invoiceDraft || currentInvoice.invoucePaid"
-          @click="updateStatusToPending"
+          v-if="currentInvoice.invoiceDraft || currentInvoice.invoicePaid"
+          @click="updateStatusToPending(currentInvoice.docId)"
           class="orange"
         >
           Mark as Pending
@@ -95,7 +95,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapMutations, mapActions } from 'vuex';
 export default {
   name: "InvoiceView",
   data() {
@@ -107,16 +107,43 @@ export default {
     this.getCurrentInvoice();
   },
   methods: {
-    ...mapMutations(["SET_CURRENT_INVOICE"]),
+    ...mapMutations(["TOGGLE_INVOICE", "SET_CURRENT_INVOICE", "TOGGLE_EDIT_INVOICE"]),
+
+    ...mapActions(["DELETE_INVOICE", "UPDATE_STATUS_TO_PAID", "UPDATE_STATUS_TO_PENDING"]),
 
     getCurrentInvoice() {
       this.SET_CURRENT_INVOICE(this.$route.params.invoiceId);
       this.currentInvoice = this.curentInvoiceArray[0];
+    },
+
+    toggleEditInvoice() {
+      this.TOGGLE_EDIT_INVOICE();
+      this.TOGGLE_INVOICE();
+    },
+
+    async deleteInvoice(docId) {
+      await this.DELETE_INVOICE(docId);
+      this.$router.push({ name: "Home" });
+    },
+
+    updateStatusToPaid(docId) {
+      this.UPDATE_STATUS_TO_PAID(docId);
+    },
+
+    updateStatusToPending(docId) {
+      this.UPDATE_STATUS_TO_PENDING(docId);
     }
   },
   computed: {
-    ...mapState(["curentInvoiceArray"]),
+    ...mapState(["curentInvoiceArray", "editInvoice"]),
   },
+  watch: {
+    editInvoice() {
+      if (!this.editInvoice) {
+        this.currentInvoice = this.curentInvoiceArray[0];
+      }
+    }
+  }
 }
 </script>
 

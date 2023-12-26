@@ -7,8 +7,8 @@
     </div>
     <div class="right flex">
       <span class="price">${{ invoice.invoiceTotal }}</span>
-      <div class="status-button flex" :class="{ paid: invoice.invoucePaid, draft: invoice.invoiceDraft, pending: invoice.invoicePending }">
-        <span v-if="invoice.invoucePaid">Paid</span>
+      <div class="status-button flex" :class="{ paid: invoice.invoicePaid, draft: invoice.invoiceDraft, pending: invoice.invoicePending }">
+        <span v-if="invoice.invoicePaid">Paid</span>
         <span v-if="invoice.invoiceDraft">Draft</span>
         <span v-if="invoice.invoicePending">Peding</span>
       </div>
